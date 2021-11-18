@@ -11,6 +11,12 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from greatkart.utils import get_current_utc
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
+from clickuz import ClickUz
+from paycomuz import Paycom
+
+paycom = Paycom()
 
 
 def payments(request):
@@ -42,7 +48,11 @@ def payments(request):
         orderproduct.user_id = request.user.id
         orderproduct.product_id = item.product_id
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.price
+        # CHECK this!
+        if item.reduced_price:
+            orderproduct.product_price = item.reduced_price
+        else:
+            orderproduct.product_price = item.product.price
         orderproduct.ordered = True
         orderproduct.save()
 
@@ -78,7 +88,8 @@ def payments(request):
     return JsonResponse(data)
 
 
-def place_order(request, total=0, quantity=0,):
+def place_order(request, total=0, quantity=0, ):
+    context = {}
     current_user = request.user
 
     # If the cart count is less than or equal to 0, then redirect back to shop
@@ -92,6 +103,11 @@ def place_order(request, total=0, quantity=0,):
     for cart_item in cart_items:
         total += (cart_item.product.price * cart_item.quantity)
         quantity += cart_item.quantity
+
+        if cart_item.reduced_price:
+            total += cart_item.reduced_price
+        else:
+            total += cart_item.reduced_price
 
     grand_total = total + tax
 
@@ -125,26 +141,44 @@ def place_order(request, total=0, quantity=0,):
             data.order_number = order_number
             data.save()
 
+            for cart_item in cart_items:
+                orderproduct = OrderProduct()
+                orderproduct.order = data
+                orderproduct.product = cart_item.product
+                orderproduct.quantity = cart_item.quantity
+
+                if cart_item.reduced_price:
+                    orderproduct.product_price = cart_item.reduced_price
+                else:
+                    orderproduct.product_price = cart_item.product.price
+
+                orderproduct.save()
+
+                for var in cart_item.variations.all():
+                    orderproduct.variations.add(var)
+
             order = Order.objects.get(
                 user=current_user, is_ordered=False, order_number=order_number)
-            context = {
-                'order': order,
-                'cart_items': cart_items,
-                'total': total,
-                'tax': tax,
-                'grand_total': grand_total,
-            }
+
+            context["order"] = order
+            context["cart_items"] = cart_items
+            context["total"] = total
+            context["tax"] = tax
+            context["grand_total"] = grand_total
+            context["click_url"] = ClickUz.generate_url(order_id=order.id, amount=order.total_price)
+            context["payme_url"] = paycom.create_initialization(amount=grand_total * 100, order_id=str(data.id),
+                                                                return_url="http://45.129.170.154")
             return render(request, 'orders/payments.html', context)
 
         elif request.POST.get("coupon-code", None):
             coupon_code = request.POST.get("coupon-code", None)
             coupons = Coupon.objects.filter(code=coupon_code, is_used=False)
             if not coupons.exists():
-                messages.success(request, "The coupon code doesn't exist")
+                messages.success(request, _("The coupon code doesn't exist"))
             else:
                 coupon = coupons.first()
                 if get_current_utc() > coupon.expires_in:
-                    messages.success(request, "The coupon code expired.")
+                    messages.success(request, _("The coupon code expired."))
                 else:
                     for cartitem in cart_items:
                         categories = []
@@ -155,11 +189,9 @@ def place_order(request, total=0, quantity=0,):
 
                         if category in categories:
                             if cartitem.reduced_price:
-                                cartitem.reduced_price = (
-                                    cartitem.reduced_price * (100 - coupon.stock)) / 100
+                                cartitem.reduced_price = (cartitem.reduced_price * (100 - coupon.stock)) / 100
                             else:
-                                cartitem.reduced_price = (
-                                    cartitem.product.price * (100 - coupon.stock)) / 100
+                                cartitem.reduced_price = (cartitem.product.price * (100 - coupon.stock)) / 100
                             cartitem.save()
                             coupon.is_used = True
                             coupon.save()
@@ -178,13 +210,15 @@ def place_order(request, total=0, quantity=0,):
                     quantity += cart_item.quantity
 
             grand_total = total + tax
-            context = {
-                'order': order,
-                'cart_items': cart_items,
-                'total': total,
-                'tax': tax,
-                'grand_total': grand_total,
-            }
+
+            context["order"] = order
+            context["cart_items"] = cart_items
+            context["total"] = total
+            context["tax"] = tax
+            context["grand_total"] = grand_total
+            context["click_url"] = ClickUz.generate_url(order_id=order.id, amount=order.total_price)
+            context["payme_url"] = paycom.create_initialization(amount=grand_total * 100, order_id=str(order.id),
+                                                                return_url="https://61a9-213-230-109-109.ngrok.io")
             return render(request, 'orders/payments.html', context)
     else:
         return render(request, 'orders/payments.html', context)

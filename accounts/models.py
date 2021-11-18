@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Group, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 
 
@@ -15,6 +15,7 @@ class MyAccountManager(BaseUserManager):
             first_name = first_name,
             last_name = last_name,
         )
+
         user.is_active = True
         user.set_password(password)
         user.save(using=self._db)
@@ -36,18 +37,15 @@ class MyAccountManager(BaseUserManager):
 
 
 
-class Account(AbstractBaseUser):
-    first_name      = models.CharField(max_length=50, verbose_name="First Name", null=True, blank=True)
-    last_name       = models.CharField(max_length=50, verbose_name='Last Name', null=True, blank=True)
-    phone_number    = models.CharField(max_length=50, unique=True, verbose_name='Phone Number')
+class Account(AbstractBaseUser, PermissionsMixin):
+    first_name      = models.CharField(max_length=50, null=True, blank=True, verbose_name="First Name")
+    last_name       = models.CharField(max_length=50, null=True, blank=True, verbose_name='Last Name')
+    username        = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    phone_number    = models.CharField(max_length=50, null=True, blank=True,  unique=True, verbose_name='Phone Number')
 
-    # required
-    date_joined     = models.DateTimeField(auto_now_add=True, verbose_name='Data Joined')
-    last_login      = models.DateTimeField(auto_now_add=True, verbose_name='Last Login')
     is_admin        = models.BooleanField(default=False, verbose_name='Is Admin')
     is_staff        = models.BooleanField(default=False, verbose_name='Is Staff')
     is_active        = models.BooleanField(default=True, verbose_name='Is Active')
-    is_superadmin        = models.BooleanField(default=False, verbose_name='Is Superadmin')
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -58,7 +56,7 @@ class Account(AbstractBaseUser):
         return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
-        return self.phone_number
+        return str(self.phone_number)
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

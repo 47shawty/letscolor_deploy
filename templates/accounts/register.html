@@ -45,12 +45,11 @@
 			    <div class="form-group">
 			        <button type="submit" class="btn btn-primary btn-block"> {% trans 'Register' %}  </button>
 			    </div> <!-- form-group// -->
-
-      {{ form.non_field_errors }}
+     
 		</form>
 		</article><!-- card-body.// -->
     </div> <!-- card .// -->
-    <p class="text-center mt-4"> <a href="{% url 'login' %}">{% trans 'Log In' %}</a></p>
+    <p class="text-center mt-4">{% trans 'Already have an account?' %} <a href="{% url 'login' %}">{% trans 'Log In' %}</a></p>
     <br><br>
 <!-- ============================ COMPONENT REGISTER  END.// ================================= -->
 

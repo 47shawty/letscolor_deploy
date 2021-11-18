@@ -35,13 +35,13 @@ class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name=_('First Name'))
     last_name = models.CharField(max_length=50, verbose_name=_('Last Name'))
     phone = models.CharField(max_length=15, verbose_name=_('Phone'))
-    email = models.EmailField(max_length=50, verbose_name=_('Email'))
+    email = models.EmailField(max_length=50, blank=True, null=True, verbose_name=_('Email'))
     address_line_1 = models.CharField(max_length=50, verbose_name=_('Address Line 1'))
-    address_line_2 = models.CharField(max_length=50, blank=True, verbose_name=_('Address Line 2'))
-    country = models.CharField(max_length=50, verbose_name=_('Country'))
-    state = models.CharField(max_length=50, verbose_name=_('State'))
-    city = models.CharField(max_length=50, verbose_name=_('City'))
-    order_note = models.CharField(max_length=100, blank=True, verbose_name=_('Order Note'))
+    address_line_2 = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('Address Line 2'))
+    country = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('Country'))
+    state = models.CharField(max_length=50, blank=True, null=True,  verbose_name=_('State'))
+    city = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('City'))
+    order_note = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('Order Note'))
     order_total = models.FloatField(verbose_name=_('Order Total'))
     tax = models.FloatField(verbose_name=_('Tax'))
     status = models.CharField(max_length=10, choices=STATUS, default='New', verbose_name=_('Status'))
@@ -62,11 +62,17 @@ class Order(models.Model):
     class Meta:
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
+    
+    @property
+    def total_price(self):
+        total = 0.0
+        for item in self.items.all():
+            total += item.quantity * item.product_price
+        return total
+
 
 class OrderProduct(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name=_('Order'))
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Payment'))
-    user = models.ForeignKey(Account, on_delete=models.CASCADE, verbose_name=_('User'))
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name=_('Order'), related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_('Product'))
     variations = models.ManyToManyField(Variation, blank=True, verbose_name=_('Variations'))
     quantity = models.IntegerField(verbose_name=_('Quantity'))

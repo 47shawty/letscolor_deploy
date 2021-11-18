@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'admin_honeypot',
     'storages',
-    "mptt"
+    "mptt",
+
+    "paycomuz",
+    "clickuz",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -135,7 +139,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # For ckeditor
 CKEDITOR_UPLOAD_PATH = "static/uploads/"
@@ -149,11 +153,15 @@ CKEDITOR_CONFIGS = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     'greatkart/static',
 ]
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
+)
 
 # media files configuration
 MEDIA_URL = '/media/'
@@ -208,3 +216,21 @@ ROSETTA_ACCESS_CONTROL_FUNCTION = "greatkart.settings.has_rosetta_access"
 
 def has_rosetta_access(user):
     return user.is_superadmin
+
+
+PAYCOM_SETTINGS = {
+    "KASSA_ID": "6184d62564198587b8943b03",
+    "TOKEN": "6184d62564198587b8943b03",
+    "SECRET_KEY": "#84uSW2G94NdG&Qkq2rUP8no&Gdn@P7K8Fz5",
+    "ACCOUNTS": {
+        "KEY": "order_id"
+    }
+}
+
+
+CLICK_SETTINGS = {
+    "service_id": "19585",
+    "merchant_id": "14087",
+    "secret_key": "C9ChF05CKs",
+    "merchant_user_id": "22339"
+}

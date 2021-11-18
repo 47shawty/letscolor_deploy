@@ -6,14 +6,13 @@ from django.utils.html import format_html
 # Register your models here.
 
 class AccountAdmin(UserAdmin):
-    list_display = ('first_name', 'last_name', 'phone_number', 'last_login', 'date_joined', 'is_active')
+    list_display = ('first_name', 'last_name', 'phone_number',  'is_active')
     list_display_links = ('phone_number', 'first_name', 'last_name')
-    readonly_fields = ('last_login', 'date_joined')
-    ordering = ('-date_joined',)
 
     filter_horizontal = ()
     list_filter = ()
     fieldsets = ()
+
 
 class UserProfileAdmin(admin.ModelAdmin):
     def thumbnail(self, object):

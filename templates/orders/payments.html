@@ -10,7 +10,8 @@
         .itemside {
             display: flex;
         }
-        .dlist-align{
+
+        .dlist-align {
             display: flex;
             justify-content: space-between;
         }
@@ -51,8 +52,38 @@
             color: #000;
             font-style: inherit;
         }
+
+        .payment_img {
+            width: 150px;
+            display: inline-block;
+            float: left;
+        }
+
+        .payment_img {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.payment_img img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.payment_img a {
+    padding: 0 20px;
+    width: 150px;
+    border: 1px solid #e7e7e7;
+    height: 60px;
+    margin: 0 15px;
+    display: flex;
+    align-items: center;
+}
     </style>
 {% endblock css %}
+
+{% include 'includes/alerts.html' %}
+
 {% block content %}
 
 
@@ -69,9 +100,17 @@
                         <div class="card-body">
                             <p class="card-text mb-0">{{ order.full_name }}</p>
                             <p class="card-text mb-0">{{ order.full_address }}</p>
-                            <p class="card-text mb-0">{{ order.city }}, {{ order.state }}</p>
-                            <p class="card-text mb-0">{{ order.country }}</p>
-                            <p class="card-text mb-0">{{ order.email }}</p>
+                            {% if order.city %}
+                                <p class="card-text mb-0">{{ order.city }}, {{ order.state }}</p>
+                            {% endif %}
+                            {% if order.country %}
+                                <p class="card-text mb-0">{{ order.country }}</p>
+                            {% endif %}
+                            {% if order.email %}
+
+                                <p class="card-text mb-0">{{ order.email }}</p>
+
+                            {% endif %}
                             <p class="card-text mb-0">{{ order.phone }}</p>
                             {% if order.order_note %}
                                 <b>Order Note: </b> {{ order.order_note }}
@@ -127,10 +166,10 @@
                                         </td>
                                         <td>
                                             <div class="price-wrap">
-                                                <var class="price">$ {{ cart_item.sub_total }}</var>
-                                                <small class="text-muted cost__pro"> $ {% if cart_item.reduced_price %}
-                                                    {{ cart_item.reduced_price }}{% else %}
-                                                    {{ cart_item.product.price }}{% endif %} </small>
+                                                <var class="price">{{ cart_item.sub_total }} {% trans 'сум' %}</var>
+                                                <small class="text-muted cost__pro">{% if cart_item.reduced_price %}
+                                                    {{ cart_item.reduced_price }} {% trans 'сум' %}{% else %}
+                                                    {{ cart_item.product.price }} {% trans 'сум' %}{% endif %} </small>
                                             </div> <!-- price-wrap .// -->
                                         </td>
 
@@ -150,28 +189,40 @@
                         <div class="card-body">
                             <dl class="dlist-align">
                                 <dt>{% trans 'Total price:' %}</dt>
-                                <dd class="text-right">$ {{ total|floatformat:2 }}</dd>
+                                <dd class="text-right">{{ total|floatformat:2 }} {% trans 'сум' %}</dd>
                             </dl>
 
                             <dl class="dlist-align">
                                 <dt>{% trans 'Grand Total:' %}</dt>
-                                <dd class="text-right text-dark b"><strong>$ {{ grand_total|floatformat:2 }}</strong>
+                                <dd class="text-right text-dark b">
+                                    <strong>{{ grand_total|floatformat:2 }} {% trans 'сум' %}</strong>
                                 </dd>
                             </dl>
                             <form action="" method="POST">
                                 <div class="input-group">
-                                <input type="text" class="form-control form-control-sm" name="coupon-code" placeholder="{% trans 'Coupon code' %}" value="">
-                                <div class="input-group-prepend">
+                                    <input type="text" class="form-control form-control-sm" name="coupon-code"
+                                           placeholder="{% trans 'Coupon code' %}" value="">
+                                    <div class="input-group-prepend">
 
-                                <button class="btn btn-sm" type="submit" name="button">{% trans 'Apply' %}</button>
-                                </div>
+                                        <button class="btn btn-sm" type="submit"
+                                                name="button">{% trans 'Apply' %}</button>
+                                    </div>
                                 </div>
                             </form>
                             <hr>
 
 
-                            <div id="paypal-button-container">
-                                <!-- PayPal Button Will Load -->
+                            <div id="paypal-button-container"  class="payment_img">
+                                {#                                <button type="submit" class="btn  btn-primary">#}
+                                <a href="{{ click_url }}">
+                                <img src="{% static 'images/payments/click.jpg' %}">
+                                </a>
+                                {#                                </button>#}
+                                {#                                <button type="submit">#}
+                                <a href="{{ payme_url }}">
+                                    <img src="{% static 'images/payments/payme.svg' %}">
+                                </a>
+                                {#                                </button>#}
                             </div>
 
                         </div> <!-- card-body.// -->

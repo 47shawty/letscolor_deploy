@@ -134,8 +134,9 @@
                     <div class="header-user">
                         <i class="icon-user-2"></i>
                         <div class="header-userinfo d-none d-lg-block">
-                            <span class="d-inline-block font2 line-height-1">{% trans 'Hello!' %}</span>
-                            <h4 class="mb-0">{% trans 'Welcome' %} {{user.first_name}}</h4>
+                            <span class="d-inline-block font2 line-height-1">{% trans 'Hello' %} <b>{{user.first_name}}!</b></span><br>
+                            <a href="{% url 'home' %}" class="mb-0">{% trans 'Home' %}</a><span class="dark-transp"> | </span>
+                            <a href="{% url 'logout' %}" sclass="mb-0">{% trans 'Log out' %}</a>
                         </div>
                     </div>
                 </a>

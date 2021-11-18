@@ -81,9 +81,9 @@
                                                     {% endif %}
                                                 </p>
                                             </td>
-                                            <td>$ {{ cart_item.sub_total }}
+                                            <td>{{ cart_item.sub_total }} {% trans 'сум' %}
                                                 <p class="text-muted" style="font-size: 10px">
-                                                    $ {{ cart_item.product.price }} each </p>
+                                                    {{ cart_item.product.price }} {% trans 'сум' %} {% trans 'each' %} </p>
                                             </td>
                                             {#                                            <small class="text-muted" style="font-size: 10px"> $ {{ cart_item.product.price }} each </small>#}
                                             <td>
@@ -144,7 +144,7 @@
                                     <tbody>
                                     <tr>
                                         <td><h5>{% trans 'Total price:' %}</h5></td>
-                                        <td><h5>$ {{ total }}</h5></td>
+                                        <td><h5>{{ total }} {% trans 'сум' %}</h5></td>
                                     </tr>
 
 
@@ -153,7 +153,7 @@
                                     <tfoot>
                                     <tr>
                                         <td><h5>{% trans 'Total' %}</h5></td>
-                                        <td><h5>$ {{ grand_total }}</h5></td>
+                                        <td><h5>{{ grand_total }} {% trans 'сум' %}</h5></td>
                                     </tr>
                                     </tfoot>
                                 </table>

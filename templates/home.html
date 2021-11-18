@@ -191,7 +191,7 @@
                                                 <!-- End .product-ratings -->
                                             </div><!-- End .product-container -->
                                             <div class="price-box">
-                                                <span class="product-price">$ {{ product.price }}</span>
+                                                <span class="product-price">{{ product.price }} {% trans 'сум' %}</span>
                                             </div><!-- End .price-box -->
                                         </div><!-- End .product-details -->
                                     </div>
@@ -245,7 +245,7 @@
                                             </span><!-- End .product-ratings -->
                                         </div><!-- End .product-container -->
                                         <div class="price-box">
-                                            <span class="product-price">$ {{ product.price }}</span>
+                                            <span class="product-price">{{ product.price }} {% trans 'сум' %}</span>
                                         </div><!-- End .price-box -->
                                     </div><!-- End .product-details -->
                                 </div>
@@ -358,7 +358,7 @@
                                             <!-- End .product-ratings -->
                                         </div><!-- End .product-container -->
                                         <div class="price-box">
-                                            <span class="product-price">$ {{ product.price }}</span>
+                                            <span class="product-price">{{ product.price }} {% trans 'сум' %}</span>
                                         </div><!-- End .price-box -->
                                     </div><!-- End .product-details -->
                                 </div>
@@ -378,9 +378,13 @@
                         'margin': 0
                     }" data-animation-name="fadeIn" data-animation-delay="400">
                         {% for brand in brands %}
-                            <a href="{{brand.get_url}}"><img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}"
+                            <a href="{{brand.get_url}}">
+                            {% if brand.brand_image %}
+                                <img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}"
                                  width="140"
-                                 height="60"></a>
+                                 height="60">
+                            {% endif %}
+                            </a>
                         {% endfor %}
                     </div>
                 </div>

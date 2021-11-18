@@ -19,7 +19,7 @@ class ProductAdmin(TranslatableAdmin):
             'slug': ('product_name',)
         }
 
-
+@admin_thumbnails.thumbnail('variat')
 class VariationAdmin(TranslatableAdmin):
     list_display = ('product', 'variation_category', 'is_active')
     list_editable = ('is_active',)

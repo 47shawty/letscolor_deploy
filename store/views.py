@@ -6,7 +6,6 @@ from django.db.models import Q
 
 from django.utils.translation import gettext_lazy as _
 
-
 from carts.views import _cart_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
@@ -26,20 +25,26 @@ def store(request, category_slug=None):
 
         # if request.GET.get(''):
 
-
-            # price__lte=50, price__gte=50
+        # price__lte=50, price__gte=50
         products = Product.objects.filter(
-            category_id__in=[item.id for item in category.get_descendants(include_self=True)], is_available=True).order_by('-created_date')
+            category_id__in=[item.id for item in category.get_descendants(include_self=True)],
+            is_available=True).order_by('-created_date')
         r_products = Product.objects.all().filter(is_available=True).order_by('created_date')[:10]
-    else:
 
-        if request.GET.get(''):
+
+
+    else:
+        if request.GET.get:
             price_r = {}
-            price_r['price__range'] = request.get(''), request.get('')
-            products = Product.objects.all().filter(is_available=True, **price_r).order_by('-created_date')
+            if request.GET.get('lower') and request.GET.get('upper'):
+                price_r['price__gt'] = request.GET.get('lower')
+                price_r['price__lt'] = request.GET.get('upper')
+                products = Product.objects.all().filter(is_available=True, **price_r).order_by('-created_date')
+
+            else:
+                products = Product.objects.all().filter(is_available=True).order_by('-created_date')
             r_products = Product.objects.all().filter(is_available=True).order_by('created_date')[:10]
-        products = Product.objects.all().filter(is_available=True).order_by('-created_date')
-        r_products = Product.objects.all().filter(is_available=True).order_by('created_date')[:10]
+
 
     paginator = Paginator(products, 6)
     page = request.GET.get('page')
@@ -83,7 +88,7 @@ def product_detail(request, category_slug, product_slug):
 
     if request.user.is_authenticated:
         try:
-            orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
+            orderproduct = OrderProduct.objects.filter(product_id=single_product.id).exists()
         except OrderProduct.DoesNotExist:
             orderproduct = None
     else:

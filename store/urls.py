@@ -10,3 +10,22 @@ urlpatterns = [
     path('brand/<slug:brand_slug>/', views.store_by_brand, name='store_by_brands'),
     path('brand/<slug:brand_slug>/<slug:product_slug>/', views.product_detail_by_brand, name='product_detail_by_brand'),
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

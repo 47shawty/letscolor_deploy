@@ -1,7 +1,9 @@
 def get_current_utc():
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc)
+    import datetime
+    from django.utils import timezone
+    return timezone.now()
 
 
 def get_filename(filename):
     return filename.upper()
+

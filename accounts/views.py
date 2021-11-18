@@ -5,6 +5,7 @@ from orders.models import Order, OrderProduct
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 
 # Verification email
 from django.contrib.sites.shortcuts import get_current_site
@@ -37,26 +38,12 @@ def register(request):
             profile.profile_picture = 'default/default-user.png'
             profile.save()
 
-            # USER ACTIVATION
-            # current_site = get_current_site(request)
-            # mail_subject = 'Please activate your account'
-            # message = render_to_string('accounts/account_verification_email.html', {
-            #     'user': user,
-            #     'domain': current_site,
-            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            #     'token': default_token_generator.make_token(user),
-            # })
-            # to_email = email
-            # send_email = EmailMessage(mail_subject, message, to=[to_email])
-            # send_email.send()
-            # # messages.success(request, 'Thank you for registering with us. We have sent you a verification email to your email address [rathan.kumar@gmail.com]. Please verify it.')
-            # return redirect('/accounts/login/?command=verification&email=' + email)
-            messages.success(request, 'Registration was successful')
             return redirect('home')
         else:
-            messages.error('A user with this number already exists')
+            messages.error(request, _('An account with this number already exists'))
     else:
         form = RegistrationForm()
+
     context = {
         'form': form,
     }
@@ -123,7 +110,7 @@ def login(request):
             except:
                 return redirect('home')
         else:
-            messages.error(request, 'Invalid login credentials')
+            messages.error(request, _('Invalid login credentials'))
             return redirect('login')
     return render(request, 'accounts/login.html')
 
@@ -131,7 +118,7 @@ def login(request):
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
-    messages.success(request, 'You are logged out.')
+    messages.success(request, _('You are logged out.'))
     return redirect('login')
 
 
